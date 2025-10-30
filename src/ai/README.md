@@ -319,6 +319,26 @@ src/ai/
 - **프로젝트 구조**: `src/` 디렉토리
 - **기존 테스트 패턴**: `src/__tests__/`
 
+### ⭐ 기존 리소스 (매우 중요!)
+
+**Hooks** (`src/hooks/`):
+- `useCalendarView.ts` - 캘린더 뷰 관리
+- `useEventForm.ts` - 이벤트 폼 상태
+- `useEventOperations.ts` - 이벤트 CRUD
+- `useNotifications.ts` - 알림 관리
+- `useSearch.ts` - 검색 기능
+
+**Utils** (`src/utils/`):
+- `dateUtils.ts` - 날짜 관련 유틸리티
+- `eventOverlap.ts` - 이벤트 겹침 검사
+- `eventUtils.ts` - 이벤트 유틸리티
+- `notificationUtils.ts` - 알림 유틸리티
+- `recurrenceUtils.ts` - 반복 일정 로직
+- `timeValidation.ts` - 시간 검증
+
+**⚠️ 중요**: 새로운 코드를 작성하기 전에 반드시 기존 hooks와 utils를 확인하세요!  
+중복 구현을 방지하고 프로젝트의 일관성을 유지하는 것이 핵심입니다.
+
 ## ⚠️ 주의사항
 
 1. **에이전트 순서 엄수**: 반드시 1→2→3→4→5 순서로 진행
