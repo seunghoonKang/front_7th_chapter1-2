@@ -69,6 +69,66 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     }
   };
 
+  const saveRecurringEvents = async (events: Event[]) => {
+    try {
+      const response = await fetch('/api/events-list', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ events }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save recurring events');
+      }
+
+      await fetchEvents();
+      onSave?.();
+      enqueueSnackbar('일정 생성 완료', { variant: 'success' });
+    } catch (error) {
+      console.error('Error saving recurring events:', error);
+      enqueueSnackbar('일정 생성 실패', { variant: 'error' });
+    }
+  };
+
+  const updateRecurringSeries = async (repeatId: string, updateData: Partial<Event>) => {
+    try {
+      const response = await fetch(`/api/recurring-events/${repeatId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update recurring series');
+      }
+
+      await fetchEvents();
+      onSave?.();
+      enqueueSnackbar('일정 수정 완료', { variant: 'success' });
+    } catch (error) {
+      console.error('Error updating recurring series:', error);
+      enqueueSnackbar('일정 수정 실패', { variant: 'error' });
+    }
+  };
+
+  const deleteRecurringSeries = async (repeatId: string) => {
+    try {
+      const response = await fetch(`/api/recurring-events/${repeatId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete recurring series');
+      }
+
+      await fetchEvents();
+      enqueueSnackbar('일정 삭제 완료', { variant: 'info' });
+    } catch (error) {
+      console.error('Error deleting recurring series:', error);
+      enqueueSnackbar('일정 삭제 실패', { variant: 'error' });
+    }
+  };
+
   async function init() {
     await fetchEvents();
     enqueueSnackbar('일정 로딩 완료!', { variant: 'info' });
@@ -79,5 +139,13 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { events, fetchEvents, saveEvent, deleteEvent };
+  return {
+    events,
+    fetchEvents,
+    saveEvent,
+    deleteEvent,
+    saveRecurringEvents,
+    updateRecurringSeries,
+    deleteRecurringSeries,
+  };
 };
