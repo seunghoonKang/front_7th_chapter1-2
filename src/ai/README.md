@@ -194,6 +194,7 @@
 ## 📁 프로젝트 구조
 
 ### AI 에이전트 시스템
+
 ```
 src/ai/
 ├── agents/                      # 에이전트 정의
@@ -221,18 +222,21 @@ src/ai/
 ### 백엔드 API (server.js)
 
 **기본 이벤트 CRUD**
+
 - `GET /api/events` - 모든 이벤트 조회
 - `POST /api/events` - 단일 이벤트 생성
 - `PUT /api/events/:id` - 단일 이벤트 수정
 - `DELETE /api/events/:id` - 단일 이벤트 삭제
 
 **반복 이벤트 벌크 작업**
+
 - `POST /api/events-list` - 여러 이벤트 한번에 생성
   - 반복 이벤트 생성 시 같은 `repeatId` 할당
 - `PUT /api/events-list` - 여러 이벤트 한번에 수정
 - `DELETE /api/events-list` - 여러 이벤트 한번에 삭제
 
 **반복 시리즈 전용**
+
 - `PUT /api/recurring-events/:repeatId` - repeatId로 시리즈 전체 수정
 - `DELETE /api/recurring-events/:repeatId` - repeatId로 시리즈 전체 삭제
 
