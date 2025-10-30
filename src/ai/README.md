@@ -1,170 +1,297 @@
-# 🤖 BMAD-METHOD 에이전트 구조
+# 🤖 AI 에이전트 시스템
 
-이 프로젝트는 [BMAD-METHOD](https://github.com/bmad-code-org/BMAD-METHOD) 스타일의 에이전트 기반 개발 워크플로우를 따라 반복 일정 기능을 구현합니다.
+이 프로젝트는 6개의 전문 에이전트가 협업하여 TDD 방식으로 기능을 개발하는 시스템입니다.
 
-## 📋 에이전트 역할
-
-### 1. SpecWriter (Analyst Role)
-
-**파일**: `src/ai/agents/SpecWriter.md`
-
-**책임**:
-
-- 기능 요구사항 분석
-- PRD 문서 작성
-- 테스트 시나리오 블루프린트 작성
-- 엣지 케이스 정의
-
-**산출물**:
-
-- `src/ai/PRD/recurrence-feature.md`
-
-**핸드오프**: TDD-Engineer
-
----
-
-### 2. TDD-Engineer (Dev Role)
-
-**파일**: `src/ai/agents/TDD-Engineer.md`
-
-**책임**:
-
-- Kent Beck의 TDD 원칙 따르기
-- 테스트 우선 작성 (Red → Green → Refactor)
-- 핵심 로직 구현
-- Tidy First 원칙 적용
-
-**산출물**:
-
-- `src/utils/recurrenceUtils.ts`
-- `src/__tests__/unit/easy.recurrenceUtils.spec.ts`
-- `src/__tests__/unit/medium.recurrenceUtils.spec.ts`
-- `src/ai/reports/TDD-Engineer-result.md`
-
-**핸드오프**: UI-Designer
-
----
-
-### 3. UI-Designer (Design Role)
-
-**파일**: `src/ai/agents/UI-Designer.md`
-
-**책임**:
-
-- UI 컴포넌트 구현
-- Material-UI 디자인 시스템 적용
-- 사용자 인터랙션 구현
-- 접근성 확인
-
-**산출물**:
-
-- `src/App.tsx` 업데이트 (반복 폼, 아이콘, 다이얼로그)
-- `src/__tests__/medium.integration.spec.tsx` 확장
-- `src/ai/reports/UI-Designer-result.md`
-
-**핸드오프**: Integrator
-
----
-
-### 4. Integrator (QA/Integration Role)
-
-**파일**: `src/ai/agents/Integrator.md`
-
-**책임**:
-
-- 전체 기능 통합 테스트
-- 엣지 케이스 검증
-- 버그 수정
-- 최종 품질 확인
-
-**산출물**:
-
-- `src/__tests__/medium.integration.spec.tsx` 확장
-- 버그 수정 코드
-- `src/ai/reports/Integrator-result.md`
-
-**핸드오프**: 배포 준비 완료
-
----
-
-## 🔄 워크플로우
+## 📋 에이전트 구조
 
 ```
-[SpecWriter]
-    ↓ PRD 작성
-[TDD-Engineer]
-    ↓ 테스트 + 구현
-[UI-Designer]
-    ↓ UI 구현
-[Integrator]
-    ↓ 통합 및 QA
-[배포 준비 완료]
+┌─────────────────┐
+│  사용자 요구사항  │
+└────────┬────────┘
+         ↓
+┌────────────────────────────────────────────────────────┐
+│                   에이전트 워크플로우                    │
+│                                                          │
+│  1️⃣ 기능설계  →  2️⃣ 테스트설계  →  3️⃣ 테스트작성       │
+│       ↓                                      ↓           │
+│  승인 요청                              RED→검증→GREEN   │
+│       ↓                                      ↓           │
+│  4️⃣ 코드작성  →  5️⃣ 리팩터링  →  📊 완료 보고          │
+│       ↓              ↓                                   │
+│  테스트 통과    품질 개선                                │
+└────────────────────────────────────────────────────────┘
+         ↓
+┌────────────────┐
+│  최종 승인 요청  │
+└────────────────┘
 ```
 
-## 📚 참고 문서
+## 🎯 에이전트 목록
 
-### 핵심 문서
+### 1️⃣ 기능 설계 에이전트
 
-- **TDD 원칙**: `src/ai/docs/kent-beck-tdd.md`
-- **PRD**: `src/ai/PRD/recurrence-feature.md`
+**파일**: `src/ai/agents/1-기능설계.md`
 
-### 에이전트 가이드
+**역할**: 요구사항 분석 및 기능 명세서 작성
 
-- `src/ai/agents/SpecWriter.md`
-- `src/ai/agents/TDD-Engineer.md`
-- `src/ai/agents/UI-Designer.md`
-- `src/ai/agents/Integrator.md`
+- 사용자 요구사항을 구체적인 기능 명세로 변환
+- 현재 프로젝트 상태 분석
+- 기존 코드베이스와의 연관성 파악
 
-## 🧪 개발 명령어
+**산출물**:
+
+- 기능 명세서: `src/ai/specs/[기능명]-spec.md`
+- 인수인계 문서: `src/ai/handoffs/기능설계-to-테스트설계.md`
+
+---
+
+### 2️⃣ 테스트 설계 에이전트
+
+**파일**: `src/ai/agents/2-테스트설계.md`
+
+**역할**: 테스트 계획 수립 및 설계
+
+- Kent Beck TDD 원칙 기반 테스트 설계
+- 테스트 우선순위 결정
+- 엣지 케이스 식별
+
+**산출물**:
+
+- 테스트 계획서: `src/ai/test-plans/[기능명]-test-plan.md`
+- 인수인계 문서: `src/ai/handoffs/테스트설계-to-테스트작성.md`
+
+---
+
+### 3️⃣ 테스트 작성 에이전트
+
+**파일**: `src/ai/agents/3-테스트작성.md`
+
+**역할**: 실제 테스트 코드 작성 (RED → 검증 → GREEN)
+
+- 🔴 RED: 실패하는 테스트 틀 작성
+- 🔍 검증: 테스트 코드 품질 확인
+- 🟢 GREEN: 테스트 완성 및 실행
+
+**산출물**:
+
+- 테스트 파일: `src/__tests__/[기능명].spec.ts`
+- 인수인계 문서: `src/ai/handoffs/테스트작성-to-코드작성.md`
+
+---
+
+### 4️⃣ 코드 작성 에이전트
+
+**파일**: `src/ai/agents/4-코드작성.md`
+
+**역할**: 테스트를 통과시키는 실제 기능 구현
+
+- 테스트를 통과시키는 최소 구현
+- 기존 프로젝트 패턴 준수
+- **절대 규칙**: 테스트 수정 금지
+
+**산출물**:
+
+- 구현 파일: `src/utils/`, `src/hooks/`, etc.
+- 인수인계 문서: `src/ai/handoffs/코드작성-to-리팩터링.md`
+
+---
+
+### 5️⃣ 리팩터링 에이전트
+
+**파일**: `src/ai/agents/5-리팩터링.md`
+
+**역할**: 코드 품질 개선
+
+- 코드 중복 제거 (DRY)
+- 복잡도 감소
+- 네이밍 개선
+- 성능 최적화
+
+**산출물**:
+
+- 개선된 코드
+- 완료 보고서: `src/ai/reports/[기능명]-completion-report.md`
+
+---
+
+### 6️⃣ Orchestrator 에이전트 (추후 구현)
+
+**역할**: 전체 워크플로우 관리
+
+- 에이전트 간 컨텍스트 공유
+- 에러 발생 시 롤백
+- 전체 진행 상황 보고
+
+## 🔄 워크플로우 규칙
+
+### 공통 규칙
+
+#### 1. 커밋 규칙
 
 ```bash
-# 테스트 실행 (Watch 모드)
-pnpm test
+[에이전트명] 작업타입: 간단한 설명
 
-# 테스트 커버리지 확인
-pnpm test:coverage
-
-# 개발 서버 실행
-pnpm dev
-
-# 린트 확인
-pnpm lint
+# 예시
+[기능설계] docs: 반복 일정 기능 명세서 작성
+[테스트설계] docs: 반복 일정 테스트 계획서 작성
+[테스트작성] test: 반복 일정 기본 테스트 추가
+[코드작성] feat: generateInstancesForEvent 구현
+[리팩터링] refactor: 중복 코드 제거 및 네이밍 개선
 ```
 
-## 📌 현재 상태
+#### 2. 승인 요청 (필수)
 
-- ✅ SpecWriter: PRD 작성 완료
-- ⏳ TDD-Engineer: 진행 중
-- ⏳ UI-Designer: 대기 중
-- ⏳ Integrator: 대기 중
+**모든 에이전트는 작업 완료 시 사용자 승인 필요**
 
-## 🎯 다음 단계
+```
+✅ [에이전트명] 완료
 
-1. **TDD-Engineer 시작**
+주요 내용:
+- [요약 1]
+- [요약 2]
 
-   - `src/utils/recurrenceUtils.ts` 생성
-   - 첫 번째 테스트 작성 (RED)
-   - 최소 구현 (GREEN)
-   - 리팩토링 (BLUE)
+⚠️ 다음 에이전트([다음 에이전트명])로 진행해도 될까요?
+승인해주시면 다음 단계로 넘어갑니다.
+```
 
-2. **UI-Designer 시작** (TDD-Engineer 완료 후)
+#### 3. 재시도 메커니즘
 
-   - 반복 폼 UI 활성화
-   - 아이콘 추가
-   - 다이얼로그 구현
+- 최대 3번까지 재시도
+- 3번 실패 시 이전 에이전트로 롤백
 
-3. **Integrator 시작** (UI-Designer 완료 후)
-   - 통합 테스트 작성
-   - 버그 수정
-   - 최종 검증
+#### 4. 중간 점검
 
-## 🔗 BMAD-METHOD 참고
+- 테스트 작성 에이전트: 커밋 5개마다
+- 코드 작성 에이전트: 주요 기능마다
 
-이 프로젝트는 BMAD-METHOD의 다음 원칙을 따릅니다:
+### 에이전트 간 통신 프로토콜
 
-1. **Agentic Planning**: SpecWriter가 PRD 작성
-2. **Context-Engineered Development**: PRD에 모든 컨텍스트 포함
-3. **TDD Methodology**: Kent Beck의 TDD 원칙 따르기
+모든 인수인계 문서는 다음 형식을 따름:
+
+```markdown
+# [현재 에이전트] → [다음 에이전트] 인수인계
+
+## 작업 요약
+
+- [무엇을 했는지]
+
+## 주요 결정사항
+
+- [왜 그렇게 했는지]
+
+## [다음 에이전트]를 위한 노트
+
+- ⚠️ 특별히 주의해야 할 사항
+- 💡 제안사항
+- 🔗 참고할 자료
+
+## 참조
+
+- 산출물: [파일 목록]
+- 커밋 ID: [커밋 해시]
+```
+
+## 📁 디렉토리 구조
+
+```
+src/ai/
+├── agents/                      # 에이전트 정의
+│   ├── 1-기능설계.md
+│   ├── 2-테스트설계.md
+│   ├── 3-테스트작성.md
+│   ├── 4-코드작성.md
+│   └── 5-리팩터링.md
+├── docs/                        # 참고 문서
+│   └── kent-beck-tdd.md
+├── specs/                       # 기능 명세서
+│   └── [기능명]-spec.md
+├── test-plans/                  # 테스트 계획서
+│   └── [기능명]-test-plan.md
+├── handoffs/                    # 인수인계 문서
+│   ├── 기능설계-to-테스트설계.md
+│   ├── 테스트설계-to-테스트작성.md
+│   ├── 테스트작성-to-코드작성.md
+│   └── 코드작성-to-리팩터링.md
+├── reports/                     # 완료 보고서
+│   └── [기능명]-completion-report.md
+└── README.md                    # 이 파일
+```
+
+## 🎯 품질 기준
+
+### 코드 품질
+
+- ✅ 복잡도: 10 이하
+- ✅ 함수 길이: 50줄 이하
+- ✅ 테스트 커버리지: 80% 이상
+- ✅ 모든 테스트: 통과
+- ✅ TypeScript: 컴파일 성공
+- ✅ ESLint: 경고 없음
+
+### 문서 품질
+
+- ✅ 명확하고 구체적인 설명
+- ✅ 측정 가능한 기준
+- ✅ 완전한 인수인계 정보
+
+## 🚀 사용 방법
+
+### 새로운 기능 개발 시작
+
+1. **기능 설계 에이전트 실행**
+
+   ```
+   요구사항을 전달하고 기능 명세서 작성 요청
+   ```
+
+2. **순차적으로 진행**
+
+   ```
+   각 에이전트가 완료되면 승인 후 다음 단계로
+   ```
+
+3. **최종 완료**
+   ```
+   리팩터링 에이전트 완료 후 전체 기능 완성
+   ```
+
+### 에이전트 실행 예시
+
+```
+사용자: @1-기능설계.md
+
+[요구사항]
+반복 일정 기능을 추가해주세요.
+매일/매주/매월/매년 반복이 가능해야 하고,
+31일 매월 반복, 윤년 처리 등 엣지 케이스도 처리해야 합니다.
+
+[기능 설계 에이전트 실행]
+→ 명세서 작성
+→ 승인 요청
+→ 승인 후 테스트 설계 에이전트로 자동 전환
+```
+
+## 📚 참고 자료
+
+- **Kent Beck TDD 원칙**: `src/ai/docs/kent-beck-tdd.md`
+- **프로젝트 구조**: `src/` 디렉토리
+- **기존 테스트 패턴**: `src/__tests__/`
+
+## ⚠️ 주의사항
+
+1. **에이전트 순서 엄수**: 반드시 1→2→3→4→5 순서로 진행
+2. **승인 필수**: 각 단계마다 사용자 승인 받기
+3. **테스트 불변**: 코드 작성 에이전트는 절대 테스트 수정 금지
+4. **커밋 규칙**: 모든 에이전트가 작업 시 커밋 수행
+5. **재시도 제한**: 최대 3번, 그 후 롤백
+
+## 🎓 Kent Beck TDD 원칙
+
+이 시스템의 모든 에이전트는 다음 원칙을 따릅니다:
+
+1. **Red-Green-Refactor**: 실패하는 테스트 → 통과 → 개선
+2. **한 번에 하나씩**: 작은 단계로 진행
+3. **테스트 우선**: 구현보다 테스트가 먼저
 4. **Tidy First**: 구조적 변경과 행동적 변경 분리
 
-더 자세한 내용은 [BMAD-METHOD GitHub](https://github.com/bmad-code-org/BMAD-METHOD)를 참고하세요.
+상세 내용: `src/ai/docs/kent-beck-tdd.md`
