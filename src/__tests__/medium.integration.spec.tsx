@@ -792,4 +792,22 @@ describe('반복 일정', () => {
     // 겹침 경고 다이얼로그가 표시되지 않아야 함
     expect(screen.queryByText('일정 겹침 경고')).not.toBeInTheDocument();
   });
+
+  it('반복 종료일은 2025-12-31을 초과할 수 없어야 한다', async () => {
+    setupMockHandlerRecurringCreation();
+
+    const { user } = setup(<App />);
+
+    await user.click(screen.getAllByText('일정 추가')[0]);
+
+    // 반복 체크박스 선택
+    const repeatCheckbox = screen.getByLabelText(/반복 일정/i);
+    await user.click(repeatCheckbox);
+
+    // 반복 종료일 입력 필드 확인
+    const repeatEndDateInput = screen.getByLabelText(/반복 종료일/i) as HTMLInputElement;
+
+    // max 속성이 2025-12-31로 설정되어 있는지 확인
+    expect(repeatEndDateInput).toHaveAttribute('max', '2025-12-31');
+  });
 });
