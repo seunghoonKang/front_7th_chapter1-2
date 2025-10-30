@@ -3,6 +3,7 @@
 ## 작업 요약
 
 ### ✅ 완료된 작업
+
 - **작성된 테스트**: 총 17개
   - Phase 1 (핵심 기능): 4개
   - Phase 2 (에러 처리): 4개
@@ -16,6 +17,7 @@
 - **현재 상태**: 모든 테스트 실패 (예상대로 - RED 단계 완료)
 
 ### 📦 커밋 목록
+
 1. `e98deed` - Phase 1: 반복 일정 핵심 기능 테스트 추가
 2. `522e39d` - Phase 2: 반복 일정 에러 처리 테스트 추가
 3. `dfbe1ad` - Phase 3: 반복 일정 통합 테스트 추가
@@ -26,7 +28,9 @@
 ## 주요 결정사항
 
 ### 1. Mock 전략
+
 **MSW 기반 API 모킹**:
+
 - `setupMockHandlerRecurringCreation`: POST /api/events-list
   - 여러 인스턴스에 동일한 `repeat.id` 부여
 - `setupMockHandlerRecurringUpdate`: PUT /api/recurring-events/:repeatId
@@ -37,10 +41,12 @@
   - 단일 이벤트 수정 시 repeat.type 변환 검증
 
 ### 2. 테스트 네이밍 규칙 준수
+
 - `describe`: 영어 (함수/컴포넌트명)
 - `it`: 한글 (무엇을 테스트하는지 명확하게)
 
 ### 3. AAA 패턴 엄격히 적용
+
 모든 테스트에서 Arrange-Act-Assert 구조 명확히 구분
 
 ---
@@ -50,6 +56,7 @@
 ### ⚠️ 먼저 통과시켜야 할 테스트 (권장 순서)
 
 #### 1단계: Hook 함수 구현 (가장 중요)
+
 **파일**: `src/hooks/useEventOperations.ts`
 
 ```typescript
@@ -79,6 +86,7 @@
 **이 함수들이 구현되면 Phase 1, 2의 7개 테스트가 통과됩니다.**
 
 #### 2단계: 반복 일정 생성 UI 구현
+
 **파일**: `src/components/EventForm.tsx` (또는 유사한 폼 컴포넌트)
 
 ```typescript
@@ -111,6 +119,7 @@
 **이것이 구현되면 T-101, T-205 테스트가 통과됩니다.**
 
 #### 3단계: 반복 아이콘 표시
+
 **파일**: `src/components/EventList.tsx` 또는 `EventItem.tsx`
 
 ```typescript
@@ -118,13 +127,14 @@
 
 if (event.repeat.type !== 'none') {
   // 반복 아이콘 표시
-  <RepeatIcon aria-label="반복 일정 아이콘" />
+  <RepeatIcon aria-label="반복 일정 아이콘" />;
 }
 ```
 
 **이것이 구현되면 T-102 테스트가 통과됩니다.**
 
 #### 4단계: 수정/삭제 다이얼로그 구현
+
 **새 컴포넌트**: `src/components/RecurringEventDialog.tsx`
 
 ```typescript
@@ -143,6 +153,7 @@ interface RecurringEventDialogProps {
 ```
 
 **수정 버튼 클릭 시 로직**:
+
 ```typescript
 const handleEdit = (event: Event) => {
   if (event.repeat.type !== 'none' && event.repeat.id) {
@@ -159,7 +170,7 @@ const handleSingleEdit = () => {
   // repeat.type을 'none'으로 변경
   const updatedEvent = {
     ...selectedEvent,
-    repeat: { type: 'none', interval: 1 }
+    repeat: { type: 'none', interval: 1 },
   };
   saveEvent(updatedEvent);
 };
@@ -171,6 +182,7 @@ const handleSeriesEdit = () => {
 ```
 
 **삭제 버튼 클릭 시 로직**:
+
 ```typescript
 const handleDelete = (event: Event) => {
   if (event.repeat.type !== 'none' && event.repeat.id) {
@@ -195,6 +207,7 @@ const handleSeriesDelete = () => {
 **이것이 구현되면 T-103~T-107 테스트가 통과됩니다.**
 
 #### 5단계: 겹침 검사 제외
+
 **파일**: 겹침 검사 로직이 있는 파일
 
 ```typescript
@@ -214,12 +227,13 @@ const checkOverlap = (event: Event) => {
 ## 💡 구현 시 주의사항
 
 ### 1. repeatId 일관성 보장 ⚠️
+
 **중요**: 동일 시리즈의 모든 인스턴스는 동일한 `repeat.id`를 가져야 함
 
 ```typescript
 // ✅ 올바른 구현
 const repeatId = `repeat-${Date.now()}`;
-instances.forEach(instance => {
+instances.forEach((instance) => {
   instance.repeat.id = repeatId; // 모두 동일한 ID
 });
 
@@ -231,30 +245,33 @@ instances.forEach((instance, index) => {
 
 ### 2. 단일 vs 전체 수정/삭제 API 구분
 
-| 동작 | API 엔드포인트 | 함수 | repeat.type 변환 |
-|-----|--------------|-----|----------------|
-| 단일 수정 | `PUT /api/events/:id` | `saveEvent(event)` | 'none'으로 변경 |
-| 전체 수정 | `PUT /api/recurring-events/:repeatId` | `updateRecurringSeries(repeatId, data)` | 유지 |
-| 단일 삭제 | `DELETE /api/events/:id` | `deleteEvent(id)` | - |
-| 전체 삭제 | `DELETE /api/recurring-events/:repeatId` | `deleteRecurringSeries(repeatId)` | - |
+| 동작      | API 엔드포인트                           | 함수                                    | repeat.type 변환 |
+| --------- | ---------------------------------------- | --------------------------------------- | ---------------- |
+| 단일 수정 | `PUT /api/events/:id`                    | `saveEvent(event)`                      | 'none'으로 변경  |
+| 전체 수정 | `PUT /api/recurring-events/:repeatId`    | `updateRecurringSeries(repeatId, data)` | 유지             |
+| 단일 삭제 | `DELETE /api/events/:id`                 | `deleteEvent(id)`                       | -                |
+| 전체 삭제 | `DELETE /api/recurring-events/:repeatId` | `deleteRecurringSeries(repeatId)`       | -                |
 
 ### 3. repeat.type 변환 로직 ⚠️
+
 **단일 수정 시 필수 변경사항**:
+
 ```typescript
 const handleSingleEdit = (event: Event) => {
   const updatedEvent = {
     ...event,
     repeat: {
-      type: 'none' as const,  // 'weekly' → 'none'
+      type: 'none' as const, // 'weekly' → 'none'
       interval: 1,
       // endDate, id는 제거 또는 undefined
-    }
+    },
   };
   await saveEvent(updatedEvent);
 };
 ```
 
 ### 4. repeat.id가 없는 경우 처리
+
 ```typescript
 // repeat.type !== 'none'이지만 repeat.id가 없으면
 // 단일 수정/삭제로 처리
@@ -266,15 +283,17 @@ if (event.repeat.type !== 'none' && event.repeat.id) {
 ```
 
 ### 5. 반복 종료일 최대값 제한
+
 ```typescript
 <input
   type="date"
-  max="2025-12-31"  // ⚠️ 필수!
+  max="2025-12-31" // ⚠️ 필수!
   aria-label="반복 종료일"
 />
 ```
 
 ### 6. generateInstancesForEvent 사용
+
 **파일**: `src/utils/recurrenceUtils.ts`
 
 ```typescript
@@ -296,9 +315,11 @@ await saveRecurringEvents(instances);
 ## 🔗 참고할 기존 코드
 
 ### 1. Hook 패턴
+
 **파일**: `src/hooks/useEventOperations.ts`
 
 기존 `saveEvent`, `deleteEvent` 패턴을 참고하여 새 함수 추가:
+
 ```typescript
 // 기존 패턴
 const saveEvent = async (event: Event) => {
@@ -318,7 +339,7 @@ const saveRecurringEvents = async (events: Event[]) => {
   try {
     const response = await fetch('/api/events-list', {
       method: 'POST',
-      body: JSON.stringify({ events })
+      body: JSON.stringify({ events }),
     });
     // ... 상태 업데이트
     enqueueSnackbar('일정 생성 완료', { variant: 'success' });
@@ -329,12 +350,15 @@ const saveRecurringEvents = async (events: Event[]) => {
 ```
 
 ### 2. 통합 테스트에서 사용된 컴포넌트
+
 **예상 파일 구조**:
+
 - `src/components/EventForm.tsx` - 일정 입력 폼
 - `src/components/EventList.tsx` - 일정 목록 표시
 - `src/App.tsx` - 최상위 컴포넌트
 
 **필요한 aria-label / testId**:
+
 - `data-testid="event-submit-button"` - 제출 버튼
 - `data-testid="event-list"` - 이벤트 목록
 - `aria-label="Edit event"` - 수정 버튼
@@ -342,21 +366,14 @@ const saveRecurringEvents = async (events: Event[]) => {
 - `aria-label="반복 일정 아이콘"` - 반복 아이콘
 
 ### 3. 기존 유틸리티 함수
+
 **파일**: `src/utils/recurrenceUtils.ts`
 
 ```typescript
 // 이미 구현되어 있고 모든 테스트 통과
-export function generateInstancesForEvent(
-  event: Event,
-  rangeStart: Date,
-  rangeEnd: Date
-): Event[];
+export function generateInstancesForEvent(event: Event, rangeStart: Date, rangeEnd: Date): Event[];
 
-export function getNextOccurrence(
-  date: Date,
-  type: RepeatType,
-  interval: number
-): Date;
+export function getNextOccurrence(date: Date, type: RepeatType, interval: number): Date;
 ```
 
 ---
@@ -364,25 +381,31 @@ export function getNextOccurrence(
 ## 📊 테스트 실패 메시지 분석
 
 ### Phase 1, 2: Hook 함수 없음
+
 ```
 ❌ result.current.saveRecurringEvents is not a function
 ❌ result.current.updateRecurringSeries is not a function
 ❌ result.current.deleteRecurringSeries is not a function
 ```
+
 **해결**: `useEventOperations` 훅에 3개 함수 추가
 
 ### Phase 3: UI 요소 없음
+
 ```
 ❌ Unable to find an element with the text: /반복 일정/i
 ❌ Unable to find an element with the text: /해당 일정만 수정하시겠어요?/i
 ❌ Unable to find an element by: [aria-label="반복 일정 아이콘"]
 ```
+
 **해결**: 반복 체크박스, 다이얼로그, 아이콘 UI 추가
 
 ### Phase 4: 속성 없음
+
 ```
 ❌ expect(element).toHaveAttribute('max', '2025-12-31')
 ```
+
 **해결**: 반복 종료일 input에 max="2025-12-31" 추가
 
 ---
@@ -390,7 +413,9 @@ export function getNextOccurrence(
 ## 📁 수정/생성할 파일 목록
 
 ### 1. `src/hooks/useEventOperations.ts` (수정)
+
 **추가할 내용**:
+
 - `saveRecurringEvents` 함수
 - `updateRecurringSeries` 함수
 - `deleteRecurringSeries` 함수
@@ -399,7 +424,9 @@ export function getNextOccurrence(
 **예상 라인 수**: +80~100 라인
 
 ### 2. `src/components/EventForm.tsx` (수정 또는 생성)
+
 **추가할 내용**:
+
 - 반복 일정 체크박스
 - 반복 유형 선택
 - 반복 간격 입력
@@ -409,7 +436,9 @@ export function getNextOccurrence(
 **예상 라인 수**: +100~150 라인
 
 ### 3. `src/components/RecurringEventDialog.tsx` (생성)
+
 **새 컴포넌트**:
+
 - 단일/전체 선택 다이얼로그
 - 수정/삭제 모드 지원
 - "예" / "아니오" 버튼
@@ -417,7 +446,9 @@ export function getNextOccurrence(
 **예상 라인 수**: +60~80 라인
 
 ### 4. `src/components/EventList.tsx` 또는 `EventItem.tsx` (수정)
+
 **추가할 내용**:
+
 - 반복 아이콘 표시 로직
 - 수정 버튼 클릭 시 다이얼로그 로직
 - 삭제 버튼 클릭 시 다이얼로그 로직
@@ -425,20 +456,24 @@ export function getNextOccurrence(
 **예상 라인 수**: +40~60 라인
 
 ### 5. `src/App.tsx` (수정 가능)
+
 **추가 필요 시**:
+
 - 다이얼로그 상태 관리
 - 반복 일정 생성 플로우 연결
 
 **예상 라인 수**: +30~50 라인
 
 ### 6. `src/types.ts` (확인)
+
 **현재 타입**:
+
 ```typescript
 export interface RepeatInfo {
   type: RepeatType;
   interval: number;
   endDate?: string;
-  id?: string;  // 이미 정의되어 있는지 확인 필요
+  id?: string; // 이미 정의되어 있는지 확인 필요
 }
 ```
 
@@ -515,12 +550,14 @@ pnpm test --run
 ## 최종 체크리스트
 
 작업 시작 전 확인:
+
 - [ ] 테스트 계획서를 읽었는가?
 - [ ] 인수인계 문서를 이해했는가?
 - [ ] Kent Beck TDD 원칙을 숙지했는가?
 - [ ] 기존 코드 구조를 파악했는가?
 
 작업 완료 후 확인:
+
 - [ ] 모든 17개 테스트가 통과하는가?
 - [ ] 기존 테스트들도 여전히 통과하는가?
 - [ ] Lint 에러가 없는가?
@@ -530,4 +567,3 @@ pnpm test --run
 ---
 
 **모든 테스트가 통과하면 다음 에이전트(리팩터링)로 진행합니다!** 🚀
-

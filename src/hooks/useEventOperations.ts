@@ -44,7 +44,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
       await fetchEvents();
       onSave?.();
-      enqueueSnackbar(editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.', {
+      enqueueSnackbar(editing ? '일정 수정 완료' : '일정이 추가되었습니다.', {
         variant: 'success',
       });
     } catch (error) {
@@ -62,7 +62,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       }
 
       await fetchEvents();
-      enqueueSnackbar('일정이 삭제되었습니다.', { variant: 'info' });
+      enqueueSnackbar('일정 삭제 완료', { variant: 'info' });
     } catch (error) {
       console.error('Error deleting event:', error);
       enqueueSnackbar('일정 삭제 실패', { variant: 'error' });
