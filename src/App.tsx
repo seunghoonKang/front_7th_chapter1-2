@@ -1,4 +1,9 @@
-import { Notifications, ChevronLeft, ChevronRight, Delete, Edit, Close } from '@mui/icons-material';
+import ChevronLeft from '@mui/icons-material/ChevronLeft';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+import Close from '@mui/icons-material/Close';
+import Delete from '@mui/icons-material/Delete';
+import Edit from '@mui/icons-material/Edit';
+import Notifications from '@mui/icons-material/Notifications';
 import Repeat from '@mui/icons-material/Repeat';
 import {
   Alert,
@@ -95,10 +100,14 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent, saveRecurringEvents, updateRecurringSeries, deleteRecurringSeries } = useEventOperations(
-    Boolean(editingEvent),
-    () => setEditingEvent(null)
-  );
+  const {
+    events,
+    saveEvent,
+    deleteEvent,
+    saveRecurringEvents,
+    updateRecurringSeries,
+    deleteRecurringSeries,
+  } = useEventOperations(Boolean(editingEvent), () => setEditingEvent(null));
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
@@ -747,18 +756,10 @@ function App() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={
-              recurringDialogType === 'edit' ? handleSingleEdit : handleSingleDelete
-            }
-          >
+          <Button onClick={recurringDialogType === 'edit' ? handleSingleEdit : handleSingleDelete}>
             예
           </Button>
-          <Button
-            onClick={
-              recurringDialogType === 'edit' ? handleSeriesEdit : handleSeriesDelete
-            }
-          >
+          <Button onClick={recurringDialogType === 'edit' ? handleSeriesEdit : handleSeriesDelete}>
             아니오
           </Button>
         </DialogActions>
