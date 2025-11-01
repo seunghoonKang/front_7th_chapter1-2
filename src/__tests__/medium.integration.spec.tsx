@@ -775,8 +775,14 @@ describe('반복 일정', () => {
     await user.click(repeatCheckbox);
     // 반복 유형 선택을 위해 대기
     await new Promise((resolve) => setTimeout(resolve, 100));
-    const repeatTypeSelect = document.getElementById('repeat-type')?.closest('.MuiFormControl')?.querySelector('[role="combobox"]') ||
-                             screen.getAllByRole('combobox').find(cb => (cb as HTMLElement).getAttribute('aria-label')?.includes('반복 유형'));
+    const repeatTypeSelect =
+      document
+        .getElementById('repeat-type')
+        ?.closest('.MuiFormControl')
+        ?.querySelector('[role="combobox"]') ||
+      screen
+        .getAllByRole('combobox')
+        .find((cb) => (cb as HTMLElement).getAttribute('aria-label')?.includes('반복 유형'));
     if (repeatTypeSelect) {
       await user.click(repeatTypeSelect);
       await user.click(screen.getByRole('option', { name: /매주/i }));
