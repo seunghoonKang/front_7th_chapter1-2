@@ -304,6 +304,9 @@ function App() {
                           >
                             <Stack direction="row" spacing={1} alignItems="center">
                               {isNotified && <Notifications fontSize="small" />}
+                              {event.repeat.type !== 'none' && (
+                                <Repeat fontSize="small" sx={{ fontSize: '0.7rem' }} />
+                              )}
                               <Typography
                                 variant="caption"
                                 noWrap
